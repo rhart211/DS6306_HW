@@ -11,5 +11,4 @@ This homework covers the following topics:
    - Creating a barplot for "college_recent_grads" dataset
    - Writing this data to CSV
 
-This CSV file created for this homework utilized data from the FiveThirtyEight Repo that can found below:
-   https://github.com/rudeboybert/fivethirtyeight
+This CSV file created for this homework utilized data from the FiveThirtyEight (https://github.com/rudeboybert/fivethirtyeight)Repo.
