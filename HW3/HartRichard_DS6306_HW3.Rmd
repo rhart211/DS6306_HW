@@ -1,0 +1,153 @@
+---
+title: "HW Assignment 03"
+author: "Richard Hart"
+date: "January 27, 2019"
+output: html_document
+---
+
+# Homework Assignment 03
+
+## Questions
+
+### Question 1 Github Cloning
+
+  * Make a new Directory
+  
+```{r, eval=FALSE, echo=TRUE}
+    $ mkdir Git_Projects
+```
+  * Navigate to newly created directory
+```{r, eval=FALSE, echo=TRUE}
+    $ cd Git_Projects
+```
+  * Clone Repository to this nely created directory
+```{r, eval=FALSE, echo=TRUE}
+    $ git clone git@github.com:awesomedata/awesome-public-datasets.git
+```
+  
+### Question 2 Data Summary
+
+  a. Read in the titanic.csv
+```{r, echo=TRUE}
+getwd()
+df <- read.csv(file = "Git_Projects/awesome-public-datasets/Datasets/titanic.csv", header=TRUE, sep=',')
+```
+
+  b. Female and Male Counts
+```{r, echo=TRUE}
+female_count <- sum(df$Sex == "female")
+female_count
+```
+
+```{r, echo=TRUE}
+male_count <- sum(df$Sex == "male")
+male_count
+```
+
+```{r, echo=TRUE}
+plot(df$Sex, xlab = "Sex", ylab = "Total Number of each Sex", main = "Frequency of Females and Males onboard the Titanic")
+```
+
+  c. Means of Age, Fare and Survival
+```{r, echo=TRUE}
+means_df <- data.frame(df$Age, df$Fare, df$Survived)
+sapply(means_df, mean, na.rm = TRUE)
+```
+
+### Question 3 Function Building
+
+```{r, echo=TRUE}
+sleep_data_func <- function(x) {
+  
+  # Read in the csv to the data frame named sleep.
+  sleep <- read.csv(file = x, header = TRUE, sep = ",")
+  
+  # A. Creating objects for median Age, the minimum and maximum Duration of sleep, 
+  # and the mean and standard deviation of the Rosenberg Self Esteem scale (RSES).
+  median_age <- median(sleep$Age, na.rm = TRUE)
+  min_duration <- min(sleep$Duration, na.rm = TRUE)
+  max_duration <- max(sleep$Duration, na.rm = TRUE)
+  mean_rses <- mean(sleep$RSES, na.rm = TRUE)
+  sd_rses <- sd(sleep$RSES, na.rm = TRUE)
+  
+  # B. This section creates a Data Frame containg the median age, the mean and sd of RSES, both
+  # divided by 5, and range of the duration of sleep.
+  report <- data.frame(median_age, mean_rses/5, sd_rses/5, max_duration-min_duration)
+  
+  # C. This secion sets the column names of the data frame.
+  cols <- c("MedianAge", "SelfEsteem", "SE_SD", "DurationRange")
+  colnames(report) <- cols
+  
+  # D. This section rounds the values in each column of the data frame to 2 digits.
+  report <- round(report, 2)
+  
+  # E. Output the data frame.
+  report
+}
+```
+
+#### Function Output
+```{r, echo=TRUE}
+sleep_data_func("sleep_data_01.csv")
+```
+
+### Question 4 FiveThirtyEight Data
+
+  a. Install Package
+```{r, echo=TRUE}
+#install.packages("fivethirtyeight", repos = "http://cran.us.r-project.org")
+```
+
+  b. Listing of the Datasets in FiveThirtyEight and assigning 22nd to df
+```{r, echo=TRUE}
+library(fivethirtyeight)
+df <- college_recent_grads
+```
+  c. More detailed list of the datasets in FiveThirtyEight
+```{r, echo=TRUE}
+#vignette("fivethirtyeight", package = "fivethirtyeight")
+#Url for the above is http://127.0.0.1:27980/library/fivethirtyeight/doc/fivethirtyeight.html
+```
+  
+
+  d. Dimensions and column names of data frame.
+```{r, echo=TRUE}
+dim(df)
+```
+```{r, echo=TRUE}
+colnames(df)
+```
+
+### Question 5 Data Summary
+  a. Column Names
+```{r, echo=TRUE}
+colnames(df)
+```
+
+  Column Count
+```{r, echo=TRUE}
+ncol(df)
+```
+
+  b. major_count
+```{r, echo=TRUE}
+library(plyr)
+major_count <- count(df, "major_category")
+```
+
+  c. Graph Frequency of College Majors from major_count
+```{r, echo=TRUE}
+par(las=2)
+barplot(major_count$freq, main = "Frequncy of College Majors from Recent College Grads", horiz = TRUE, xlab = "Frequency", ylab = "College Major", col = c("blue", "blueviolet", "brown4", "chartreuse", "chocolate", "coral", "cyan4", "darkblue", "darkcyan", "darkorange", "darkorchid", "deepskyblue", "dodgerblue", "firebrick", "forestgreen", "maroon"), names.arg = major_count$major_category)
+```
+
+  d. Write df to csv
+```{r, echo=TRUE}
+write.csv(df, file = "Recent_College_Grads.csv", row.names = FALSE)
+```
+
+### Question 6 CodeBook
+* Link to the my DS6306 HW Repo can be found:
+    + https://github.com/rhart211/DS6306_HW
+* Link to where this homework can be found:
+    + https://github.com/rhart211/DS6306_HW/tree/master/HW3

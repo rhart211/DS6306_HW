@@ -1,4 +1,4 @@
-#Homework Assignment 3
+# Homework Assignment 3
 
 This homework covers the following topics:
  * GitHub Cloning
@@ -12,3 +12,9 @@ This homework covers the following topics:
    - Writing this data to CSV
 
 This CSV file created for this homework utilized data from the [FiveThirtyEight](https://github.com/rudeboybert/fivethirtyeight) Repo.
+
+## Files 
+
+ * Rmarkdown Script
+ * Knitted HTML
+ * CSV Created from the "college_recent_grads" dataset
