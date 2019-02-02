@@ -191,27 +191,157 @@ $(document).ready(function () {
 </div>
 
 
-<div id="homework-assignment-04" class="section level1">
-<h1>Homework Assignment 04</h1>
 <div id="questions" class="section level2">
 <h2>Questions</h2>
 <div id="harry-potter" class="section level3">
-<h3>1 Harry Potter</h3>
-<ul>
-<li>Loading Libraries</li>
-</ul>
-<pre class="r"><code>library('httr')
-library('reshape2')
-library('stringr')
-library('tidyr')</code></pre>
-<pre><code>## 
-## Attaching package: 'tidyr'</code></pre>
-<pre><code>## The following object is masked from 'package:reshape2':
-## 
-##     smiths</code></pre>
-<pre class="r"><code>library('rvest')</code></pre>
+<h3>1. Harry Potter</h3>
+<p>Loading Libraries</p>
+<pre class="r"><code>library(tidyr)
+library(rvest)</code></pre>
 <pre><code>## Loading required package: xml2</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<ol style="list-style-type: lower-alpha">
+<li>View the Table data at the link below:</li>
+</ol>
+<pre class="r"><code>http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Scraping the Cast information from the URL above:</li>
+</ol>
+<pre class="r"><code>cast &lt;- read_html(&quot;http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1&quot;)
+cast_list &lt;- cast %&gt;% html_nodes(xpath = '//*[@id=&quot;fullcredits_content&quot;]/table[3]') %&gt;% html_table(header = TRUE)
+cast_df &lt;- cast_list[[1]]</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Cleaning up the Table</li>
+</ol>
+<ul>
+<li>Labeling and Removing the Unnecessary Columns</li>
+</ul>
+<pre class="r"><code>colnames(cast_df) &lt;- c(&quot;1&quot;, &quot;Actor&quot;, &quot;2&quot;, &quot;Character&quot;)
+cast_df = select(cast_df, &quot;Actor&quot;, &quot;Character&quot;)</code></pre>
+<ul>
+<li>Update Mr. Warwick’s Character Name</li>
+</ul>
+<pre class="r"><code>cast_df$Character[10] &lt;- 'Griphook / Professor Filius Flitwick'</code></pre>
+<ul>
+<li>Removing the row that contains “Rest of cast listed alphabetically” which is found at row 92</li>
+</ul>
+<pre class="r"><code>cast_df &lt;- cast_df[-c(92), ]</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Splitting Actor Name into First and Last Names</li>
+</ol>
+<pre class="r"><code>cast_df &lt;- cast_df %&gt;% separate(Actor, c(&quot;FirstName&quot;, &quot;SurName&quot;), &quot;(?=[^ ]+$)&quot;, extra = &quot;merge&quot; )</code></pre>
+<ol start="5" style="list-style-type: lower-alpha">
+<li>Present the first 10 rows</li>
+</ol>
+<pre class="r"><code>head(cast_df, 10)</code></pre>
+<pre><code>##    FirstName   SurName                            Character
+## 1     Ralph    Fiennes                       Lord Voldemort
+## 2   Michael     Gambon           Professor Albus Dumbledore
+## 3      Alan    Rickman              Professor Severus Snape
+## 4    Daniel  Radcliffe                         Harry Potter
+## 5    Rupert      Grint                          Ron Weasley
+## 6      Emma     Watson                     Hermione Granger
+## 7    Evanna      Lynch                        Luna Lovegood
+## 8  Domhnall    Gleeson                         Bill Weasley
+## 9  Clémence      Poésy                       Fleur Delacour
+## 10  Warwick      Davis Griphook / Professor Filius Flitwick</code></pre>
 </div>
+<div id="sportsball" class="section level3">
+<h3>2. SportsBall</h3>
+<p>Loading Libraries</p>
+<pre class="r"><code>library(tidyr)
+library(rvest)
+library(dplyr)</code></pre>
+<ol style="list-style-type: lower-alpha">
+<li>View the Table data at the link below:</li>
+</ol>
+<pre class="r"><code>http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Scraping the Shooting Statistic from the URL above:</li>
+</ol>
+<pre class="r"><code>shoots &lt;- read_html(&quot;http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs&quot;)
+shoots_list &lt;- shoots %&gt;% html_nodes(xpath = '//*[@id=&quot;fittPageContainer&quot;]/div[2]/div[5]/div[1]/div/article/div/section/section/section[2]/table') %&gt;% html_table(fill = TRUE)
+shoots_df &lt;- shoots_list[[1]]</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Cleaning up the Table</li>
+</ol>
+<pre class="r"><code># Remove Unwanted and Unnecessary Columns and Rows
+shoots_df &lt;- shoots_df[-c(1), ]
+shoots_df &lt;- shoots_df[-c(18), ]
+shoots_df &lt;- shoots_df[ , -c(15:258) ]
+shoots_df &lt;- shoots_df[-c(17), ]
+shoots_df &lt;- shoots_df[-c(33), ]
+
+# Create a vector with the names of Players
+name_vector &lt;- as.vector(shoots_df$X1[2:16])
+
+# Remove the Rows with the Names of the Players, I will add these back soon
+shoots_df &lt;- shoots_df[-c(1:16), ]
+
+# Create a vector using the column names, which are not yet columns
+col_vector &lt;- as.character(shoots_df[1,])
+# Append Name to the beginning of the vector made above
+col_vector &lt;- append(col_vector, &quot;Name&quot;, after = 0)
+shoots_df &lt;- shoots_df[-c(1), ]
+
+# Add the name vector as several rows to be row headings to the data frame
+shoots_df &lt;- cbind(name_vector, shoots_df)
+
+# Add the column vector to data frame to be the column headings
+colnames(shoots_df) &lt;- col_vector
+
+# Separate Team Position out into a column
+shoots_df &lt;- shoots_df %&gt;% separate(Name, c(&quot;Name&quot;, &quot;Position&quot;), &quot;(?=[^ ]+$)&quot;, extra = &quot;merge&quot;)
+
+# convert all but Name and Position to Numeric
+shoots_df[3:16] &lt;- sapply(shoots_df[3:16], as.numeric)
+sapply(shoots_df, class)</code></pre>
+<pre><code>##        Name    Position         FGM         FGA         FG%         3PM 
+## &quot;character&quot; &quot;character&quot;   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot; 
+##         3PA         3P%         FTM         FTA         FT%         2PM 
+##   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot; 
+##         2PA         2P%      SC-EFF      SH-EFF 
+##   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot;   &quot;numeric&quot;</code></pre>
+<pre class="r"><code># First 10 values of the data frame
+head(shoots_df, 10)</code></pre>
+<pre><code>##                  Name Position FGM  FGA  FG% 3PM 3PA  3P% FTM FTA  FT% 2PM
+## 21     DeMar DeRozan        SG 8.3 17.9 46.3 0.1 0.8 17.1 4.7 5.7 82.2 398
+## 22 LaMarcus Aldridge         C 8.3 16.1 51.4 0.1 0.4 21.1 4.5 5.3 84.9 434
+## 23          Rudy Gay        SF 5.7 11.0 52.1 1.0 2.5 40.2 1.8 2.0 86.4 203
+## 24       Bryn Forbes        SG 4.5 10.1 45.1 2.2 5.2 42.5 0.8 0.9 88.0 124
+## 25   Marco Belinelli        SG 3.7  8.8 42.1 2.0 5.1 39.5 1.6 1.8 91.1  86
+## 26     Derrick White        PG 3.8  7.4 50.8 0.7 1.9 36.9 1.5 2.0 77.0 134
+## 27       Patty Mills        PG 3.3  7.7 43.0 1.8 4.5 39.8 1.2 1.5 85.7  79
+## 28     Davis Bertans        SF 2.8  5.6 49.1 2.1 4.4 47.8 0.5 0.6 85.7  32
+## 29      Jakob Poeltl         C 2.2  3.4 63.3 0.0 0.0  0.0 0.8 1.4 55.2 107
+## 30         Pau Gasol         C 1.6  3.4 48.0 0.2 0.5 50.0 1.0 1.5 71.9  31
+##    2PA  2P% SC-EFF SH-EFF
+## 21 834 47.7  1.198   0.47
+## 22 833 52.1  1.311   0.52
+## 23 365 55.6  1.294   0.57
+## 24 259 47.9  1.204   0.56
+## 25 189 45.5  1.253   0.53
+## 26 241 55.6  1.317   0.56
+## 27 166 47.6  1.258   0.55
+## 28  60 53.3  1.442   0.68
+## 29 169 63.3  1.485   0.63
+## 30  65 47.7  1.333   0.51</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Creating a Bar Chart</li>
+</ol>
+<pre class="r"><code>colors &lt;- RColorBrewer::brewer.pal(length(unique(shoots_df$Position)), name = &quot;Set1&quot;)
+shoots_df$color &lt;- colors[as.factor(shoots_df$Position)]
+par(las=2)
+barplot(shoots_df$`FG%`, main = &quot;San Antonio Spurs Player Field Goals Percentage Per Game&quot;, horiz = TRUE, xlab = &quot;Field Goal % Per Game&quot;, col = shoots_df$color, names.arg = shoots_df$Name, cex.names = 0.7)</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 </div>
 

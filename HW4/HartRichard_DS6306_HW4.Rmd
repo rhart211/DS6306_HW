@@ -7,18 +7,123 @@ output:
     keep_md: true
 ---
 
-# Homework Assignment 04
-
 ## Questions
 
-### 1 Harry Potter
+### 1. Harry Potter
 
-  * Loading Libraries
+  Loading Libraries
   
 ```{r, echo=TRUE}
-library('httr')
-library('reshape2')
-library('stringr')
-library('tidyr')
-library('rvest')
+library(tidyr)
+library(rvest)
+library(dplyr)
+```
+
+a. View the Table data at the link below:
+```{r, eval=FALSE, echo=TRUE}
+http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1
+```
+
+b. Scraping the Cast information from the URL above:
+```{r, echo=TRUE}
+cast <- read_html("http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1")
+cast_list <- cast %>% html_nodes(xpath = '//*[@id="fullcredits_content"]/table[3]') %>% html_table(header = TRUE)
+cast_df <- cast_list[[1]]
+```
+
+c. Cleaning up the Table
+
+  * Labeling and Removing the Unnecessary Columns
+```{r, echo=TRUE}
+colnames(cast_df) <- c("1", "Actor", "2", "Character")
+cast_df = select(cast_df, "Actor", "Character")
+```
+
+  * Update Mr. Warwick's Character Name
+```{r, echo=TRUE}
+cast_df$Character[10] <- 'Griphook / Professor Filius Flitwick'
+```
+
+  * Removing the row that contains "Rest of cast listed alphabetically" which is found at row 92
+```{r, echo=TRUE}
+cast_df <- cast_df[-c(92), ]
+```
+
+d. Splitting Actor Name into First and Last Names
+```{r, echo=TRUE}
+cast_df <- cast_df %>% separate(Actor, c("FirstName", "SurName"), "(?=[^ ]+$)", extra = "merge" )
+```
+
+e. Present the first 10 rows
+```{r, echo=TRUE}
+head(cast_df, 10)
+```
+
+### 2. SportsBall
+
+  Loading Libraries
+  
+```{r, echo=TRUE}
+library(tidyr)
+library(rvest)
+library(dplyr)
+```
+
+a. View the Table data at the link below:
+```{r, eval=FALSE, echo=TRUE}
+http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs
+```
+
+b. Scraping the Shooting Statistic from the URL above:
+```{r, echo=TRUE}
+shoots <- read_html("http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs")
+shoots_list <- shoots %>% html_nodes(xpath = '//*[@id="fittPageContainer"]/div[2]/div[5]/div[1]/div/article/div/section/section/section[2]/table') %>% html_table(fill = TRUE)
+shoots_df <- shoots_list[[1]]
+```
+
+c. Cleaning up the Table
+
+```{r, echo=TRUE}
+# Remove Unwanted and Unnecessary Columns and Rows
+shoots_df <- shoots_df[-c(1), ]
+shoots_df <- shoots_df[-c(18), ]
+shoots_df <- shoots_df[ , -c(15:258) ]
+shoots_df <- shoots_df[-c(17), ]
+shoots_df <- shoots_df[-c(33), ]
+
+# Create a vector with the names of Players
+name_vector <- as.vector(shoots_df$X1[2:16])
+
+# Remove the Rows with the Names of the Players, I will add these back soon
+shoots_df <- shoots_df[-c(1:16), ]
+
+# Create a vector using the column names, which are not yet columns
+col_vector <- as.character(shoots_df[1,])
+# Append Name to the beginning of the vector made above
+col_vector <- append(col_vector, "Name", after = 0)
+shoots_df <- shoots_df[-c(1), ]
+
+# Add the name vector as several rows to be row headings to the data frame
+shoots_df <- cbind(name_vector, shoots_df)
+
+# Add the column vector to data frame to be the column headings
+colnames(shoots_df) <- col_vector
+
+# Separate Team Position out into a column
+shoots_df <- shoots_df %>% separate(Name, c("Name", "Position"), "(?=[^ ]+$)", extra = "merge")
+
+# convert all but Name and Position to Numeric
+shoots_df[3:16] <- sapply(shoots_df[3:16], as.numeric)
+sapply(shoots_df, class)
+
+# First 10 values of the data frame
+head(shoots_df, 10)
+```
+
+d. Creating a Bar Chart
+```{r, echo=TRUE}
+colors <- RColorBrewer::brewer.pal(length(unique(shoots_df$Position)), name = "Set1")
+shoots_df$color <- colors[as.factor(shoots_df$Position)]
+par(las=2)
+barplot(shoots_df$`FG%`, main = "San Antonio Spurs Player Field Goals Percentage Per Game", horiz = TRUE, xlab = "Field Goal % Per Game", col = shoots_df$color, names.arg = shoots_df$Name, cex.names = 0.7)
 ```
