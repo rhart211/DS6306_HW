@@ -1,0 +1,85 @@
+---
+title: "Homework 5"
+author: "Richard Hart"
+date: "2/7/2019"
+output: 
+  html_document:
+    keep_md: true
+---
+
+# Homework Assignment 5
+
+### Question 1 Data Munging
+
+Loading Libraries
+```{r, echo=TRUE}
+library(tidyr)
+```
+
+a. Importing, opening and creating a data frame from yob2016.txt file.
+```{r, echo=TRUE}
+df <- read.csv(file = "/Users/rhart/Dropbox/SMU Classes/6306 Doing DataScience/Homework/HW 5/yob2016.txt", header = FALSE, sep = ";")
+```
+
+b. Summary and Structure of df
+```{r, echo=TRUE}
+summary(df)
+str(df)
+```
+
+c. Find the duplicate name that contains 3 y's
+```{r, echo=TRUE}
+grep('yyy', df$V1)
+```
+
+d. Remove the row that contains the duplicate name found in c.
+```{r, echo=TRUE}
+y2016 <- df[-grep('yyy', df$V1), ]
+```
+
+### Question 2 Data Merging
+
+a. Importing, opening and creating a data frame from yob2015.txt file.
+```{r, echo=TRUE}
+y2015 <- read.csv(file = "/Users/rhart/Dropbox/SMU Classes/6306 Doing DataScience/Homework/HW 5/yob2015.txt", header = FALSE, sep = ",")
+```
+
+b. Display the 10 rows.
+```{r, echo=TRUE}
+tail(y2015, 10)
+```
+
+What's interesting about these last 10 rows is that they're all very similar to each other in spelling. For instance, the names Zykir, Xyrus, and Zyus are only a few letters different from each other.
+
+c. Merge both y2015 and y2016 together by the name column.
+```{r, echo=TRUE}
+final <- merge(y2015, y2016, by = "V1")
+```
+
+### Question 3 Data Summary
+
+a. Add a new "Total" column and the number of children for each year together
+```{r, echo=TRUE}
+final$Total <- final$V3.x + final$V3.y
+```
+
+b. Sort final by Total
+```{r, echo=TRUE}
+tail(final[order(final$Total), ], 10)
+```
+
+c. Top 10 Most Popular Girls' Names
+```{r, echo=TRUE}
+girls <- final[-grep('M', final$V2.x), ]
+tail(girls[order(girls$Total), ], 10)
+```
+
+d. Write only the girls' names to CSV
+```{r, echo=TRUE}
+write.csv(girls[,c("V1", "Total")], file="MostPopularGirlsNames.csv",row.names=FALSE)
+```
+
+### Question 4 GitHub Location
+```{r, eval=FALSE, echo=TRUE}
+https://github.com/rhart211/DS6306_HW/tree/master/HW5
+```
