@@ -13,4 +13,4 @@ This CSV file created for this homework utilized data that included the names of
 
  * Rmarkdown Script
  * Knitted HTML
- * CSV that contains the "Most Popular Girls' Names for the years 2015 and 2016.
+ * CSV that contains the "Most Popular Girls Names" for the years 2015 and 2016.
