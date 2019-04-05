@@ -14,6 +14,7 @@ Loading Libraries
 library(dygraphs)
 library(forecast)
 library(fpp2)
+library(xts)
 ```
 
 ### 1. Warm Up: Brief Financial Data, European Stock Market DataSets
@@ -100,3 +101,58 @@ fit2$model$aicc
 ```
 
  * The AICc value for the model that utilizes, Simple Expotential Smoothing (fit1), is 144.2461, and the AICc for the model that utilizes Holt's Linear Trend method (fit2), is 157.9802. The accepted convention is to choose the model that has the lowest AICc value. Based on that convention, the best model is fit1 because it's AICc value is the lowest, at 147.2461.
+ 
+### 3.	The Wands Choose the Wizard 
+a. Dygraphs library loaded at the top of this RMarkdown document.
+ * Reading in the 2 datasets.
+```{r, echo=TRUE}
+ollivander <- read.csv(file = "Unit11TimeSeries_Ollivander.csv", col.names = c("Year", "Wands_Sold"))
+gregorovitch <- read.csv(file = "Unit11TimeSeries_Gregorovitch.csv", col.names = c("Year", "Wands_Sold"))
+```
+
+* Structure of each Data Frame
+```{r, echo=TRUE}
+str(ollivander)
+str(gregorovitch)
+```
+
+b. Converting the "Year" column in each Data Frame to Date Class
+```{r,echo=TRUE}
+ollivander$Year <- as.Date(ollivander$Year, "%d/%m/%Y")
+gregorovitch$Year <- as.Date(gregorovitch$Year, "%m/%d/%Y")
+```
+
+* Structure of each Data Frame
+```{r, echo=TRUE}
+str(ollivander)
+str(gregorovitch)
+```
+
+c. Create Time Series from the Ollivander and Gregorovitch Data Frames
+```{r, echo=TRUE}
+ollie_ts <- xts(ollivander$Wands_Sold, order.by = ollivander$Year)
+greg_ts <- xts(gregorovitch$Wands_Sold, order.by = gregorovitch$Year)
+```
+
+d. Binding the Time Series (xts) to each other, and DyGraph Creation
+```{r, echo=TRUE}
+# Merge or Bind the two time series together
+ollie_greg <- merge(ollie_ts, greg_ts)
+
+# Structure of combined Time Series
+str(ollie_greg)
+```
+
+#### Dygraph of the Number of Wands Sold by Ollivander and Gregorovitch (1971-2017)
+```{r, echo=TRUE, fig.width=9.25}
+dygraph(ollie_greg, main = "Number of Wands Sold by Wand Makers, Ollivander and Gregorovitch (1971-2017)") %>% 
+  dyAxis("y", label = "Number of Wands Sold") %>% 
+  dyAxis("x", label = "Year") %>% 
+  dySeries("ollie_ts", label = "Ollivander", color = "dodgerblue") %>% 
+  dySeries("greg_ts", label = "Gregorovitch", color = "firebrick") %>% 
+  dyOptions(stackedGraph = TRUE) %>% 
+  dyRangeSelector(dateWindow = c("1971-01-01", "2017-01-01"), height = 40) %>% 
+  dyShading(from = "1995-1-1", to = "1999-1-1", color = "darkgrey") %>% 
+  dyAnnotation("1997-01-01", text = "He-Who-Must-Not-Be-Named\n Returns", width = 200, height = 32, attachAtBottom = TRUE) %>% 
+  dyHighlight(highlightCircleSize = 3, highlightSeriesBackgroundAlpha = 0.3, hideOnMouseOut = TRUE, highlightSeriesOpts = list(strokeWidth=2))
+```
