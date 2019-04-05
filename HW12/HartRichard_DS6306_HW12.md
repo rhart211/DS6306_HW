@@ -107,13 +107,59 @@ b. Eliminating data before the year 1990
 temp_1990 <- window(maxtemp, start=1990)
 ```
 
-c. Maximum Temperature Predictions for the Next 5 Years in Melbourne.  
+c. Maximum Temperature Predictions for the Next 5 Years in Melbourne, Simple Exponential Smoothing.  
 
 ```r
 # After careful analysis it was found that setting the alpha to 0.6 produced the best 
 # predicted value line
-fit1 <- ses(temp_1990, alpha=0.6, initial = "simple", h=5)
+fit1 <- ses(temp_1990, alpha=0.6, initial = "optimal", h=5)
 plot(fit1, PI=FALSE, ylab="Temp (Degress Ceslsius)", xlab="Year", main="Max Annual Temperature Predictions at Moorabbin, 1990-2021", fcol = "white", type = "o")
+lines(fitted(fit1), col="blue", type="o")
+lines(fit1$mean, col="blue", type="o")
 ```
 
 ![](HartRichard_DS6306_HW12_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+d. Maximum Temperature Predictions for the Next 5 Years in Melbourne, Holt's Linear Trend.
+
+```r
+fit2 <- holt(temp_1990, alpha = 0.8, beta = 0.2, initial = "optimal", damped = TRUE, h = 5)
+plot(fit2, PI=FALSE, ylab="Temp (Degress Ceslsius)", xlab="Year", main="Max Annual Temperature Predictions at Moorabbin, 1990-2021 (Holt)", fcol = "white", type = "o")
+lines(fitted(fit2), col="blue", type="o")
+lines(fit2$mean, col="blue", type="o")
+```
+
+![](HartRichard_DS6306_HW12_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
+ * AICc for the fitted Model, fit2
+
+```r
+fit2$model$aicc
+```
+
+```
+## [1] 157.9802
+```
+
+e. AICc Comparison
+ * AICc for the fitted Model, fit1
+
+```r
+fit1$model$aicc
+```
+
+```
+## [1] 144.2461
+```
+
+ * AICc for the fitted Model, fit2
+
+```r
+fit2$model$aicc
+```
+
+```
+## [1] 157.9802
+```
+
+ * The AICc value for the model that utilizes, Simple Expotential Smoothing (fit1), is 144.2461, and the AICc for the model that utilizes Holt's Linear Trend method (fit2), is 157.9802. The accepted convention is to choose the model that has the lowest AICc value. Based on that convention, the best model is fit1 because it's value is the lowest at 147.2461.
