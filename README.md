@@ -8,3 +8,4 @@ This repo will be used to store homework, projects and related data for DS6306, 
  * Homework 4
  * Homework 5
  * Homework 7 <--- this wasn't really an assignment just a test.
+ * Homework 12 -- Time Series HW

@@ -1,0 +1,8 @@
+---
+title: "Homework 12 -- Time Series"
+author: "Richard Hart"
+date: "April 5, 2019"
+output: 
+  html_document:
+    keep_md: true
+---
