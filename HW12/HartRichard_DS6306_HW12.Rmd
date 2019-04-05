@@ -11,12 +11,12 @@ output:
 
 Loading Libraries
 ```{r, echo=TRUE, warning=FALSE}
-library("dygraphs")
-library("forecast")
-library("fpp2")
+library(dygraphs)
+library(forecast)
+library(fpp2)
 ```
 
-### Warm Up: Brief Financial Data, European Stock Market DataSets
+### 1. Warm Up: Brief Financial Data, European Stock Market DataSets
 
 a. European Stock Market Data Information
 ```{r, eval=FALSE, echo=TRUE}
@@ -43,4 +43,32 @@ c. Decomposition of DAX Index Time Series into its components (multiplicative mo
 EuDaxComp <- decompose(Eu_DAX, type = "multiplicative")
 plot(EuDaxComp, col="blue", ylab="Component", xlab="Year" )
 abline(v=1997, col="red")
+```
+
+
+### 2. Temperature Data (maxTemp)
+
+a. Information about the maxtemp dataset
+```{r, eval=FALSE, echo=TRUE}
+help("maxtemp")
+```
+
+```{r, echo=TRUE}
+str(maxtemp)
+plot(maxtemp, col="blue", main="Maximum Annual Temperature (Celsius) for Moorabbin Airport, 1971-2016", xlab="Year", ylab="Temp (Degress Ceslsius)")
+abline(v=1990, col="red")
+```
+
+
+b. Eliminating data before the year 1990
+```{r, echo=TRUE}
+temp_1990 <- window(maxtemp, start=1990)
+```
+
+c. Maximum Temperature Predictions for the Next 5 Years in Melbourne.  
+```{r, echo=TRUE}
+# After careful analysis it was found that setting the alpha to 0.6 produced the best 
+# predicted value line
+fit1 <- ses(temp_1990, alpha=0.6, initial = "simple", h=5)
+plot(fit1, PI=FALSE, ylab="Temp (Degress Ceslsius)", xlab="Year", main="Max Annual Temperature Predictions at Moorabbin, 1990-2021", fcol = "white", type = "o")
 ```
