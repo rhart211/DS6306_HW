@@ -14,6 +14,19 @@ Loading Libraries
 ```r
 library("dygraphs")
 library("forecast")
+library("fpp2")
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## Loading required package: fma
+```
+
+```
+## Loading required package: expsmooth
 ```
 
 ### Warm Up: Brief Financial Data, European Stock Market DataSets

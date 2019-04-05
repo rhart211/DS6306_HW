@@ -13,6 +13,7 @@ Loading Libraries
 ```{r, echo=TRUE, warning=FALSE}
 library("dygraphs")
 library("forecast")
+library("fpp2")
 ```
 
 ### Warm Up: Brief Financial Data, European Stock Market DataSets
